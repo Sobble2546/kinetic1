@@ -111,9 +111,10 @@ sequence; their implementations remain future work.
 
 **Verification coverage:** the shared frontend, backend, and native suites cover
 returned local arrays, dynamic bounds, and function results and are enabled in
-hosted CI. The allocation-failure trap is implemented, but the current suites
-do not force allocator failure. Passing verification must be established from
-observed local or hosted results, not from configuration or written tests alone.
+hosted CI. Allocation failure now has a structural backend assertion and a
+Linux native failure-injection regression in the shared suites. The native
+injection test still needs an observed hosted Clang run; passing verification
+must be established from results, not configuration or written tests alone.
 
 ### 2. Add the language and runtime building blocks
 
@@ -136,8 +137,11 @@ observed local or hosted results, not from configuration or written tests alone.
   guards: the length builtin, array metadata, and read checks are implemented
   since 1.2.0 and covered by the suites selected in hosted CI. Version 1.2.1
   defines process-lived, unreclaimed heap storage and traps on failed nonempty
-  allocations, and 1.3.0 defines mutation rules for indexed writes;
-  allocation-failure regression coverage remains.
+  allocations, and 1.3.0 defines mutation rules for indexed writes. Allocation
+  failure now has structural backend and Linux native failure-injection
+  regressions in [test_backend.py](tests/test_backend.py) and
+  [test_native.py](tests/test_native.py); hosted behavioral/native verification
+  of this coverage is pending.
 - [ ] Defined allocation and lifetime rules for compiler-owned data, with checks
   appropriate to the chosen design.
 - [x] File input/output, command-line arguments, diagnostics, and error/status

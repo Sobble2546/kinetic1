@@ -69,9 +69,13 @@ failure block traps and that element pointer arithmetic, loads, and stores
 appear only after the bounds branch. These backend tests require IR generation; they are
 not part of static-only verification.
 
-The backend also traps on failed nonempty-array allocations, but the current
-suites do not force allocation failure or directly assert that failure path.
-Do not describe the heap-storage tests as allocation-failure coverage.
+Failed nonempty-array allocations now have both structural backend coverage
+(the failure block traps before element initialization) and a Linux native
+regression that uses linker `--wrap=malloc` to fail the generated program's
+first allocation. The native test checks unsuccessful termination before the
+following output. Failure injection requires Clang, Linux linker wrapping, and
+native-test opt-in; hosted native CI runs it on Ubuntu. This covers array
+storage allocation failure, not every allocation site.
 
 ## General runner
 
@@ -102,9 +106,11 @@ and successful reads across function calls,
 copies, and reassignment, including locally created arrays returned from helpers
 and read after later calls; they also check nonzero exits for negative,
 upper-bound, empty-array, shortened-array, and out-of-bounds returned-array
-reads and writes. Runtime-failure examples are compiled and executed separately. Trap
-status is checked as nonzero rather than assuming a specific platform's signal
-number.
+reads and writes. Runtime-failure examples are compiled and executed separately.
+Those general trap checks require a nonzero status without assuming one signal
+number. The Linux allocation-injection regression instead requires SIGILL or
+SIGTRAP from LLVM's target trap instruction, so an accidental SIGSEGV does not
+count as a passing allocation-failure check.
 
 PowerShell:
 
