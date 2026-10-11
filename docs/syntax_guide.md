@@ -1,6 +1,6 @@
 # The Kinetic Syntax Guide
 
-This guide describes the 1.5.0 prototype. Kinetic explores readable systems-language syntax, but it does not yet provide a production memory-safety model.
+This guide describes the 1.5.1 prototype. Kinetic explores readable systems-language syntax, but it does not yet provide a production memory-safety model.
 
 Kinetic uses concise declarations and compiles through LLVM. The examples below
 show current syntax, not the proposed bootstrap host-service API.
@@ -37,7 +37,7 @@ counter = counter + 1 // Reassignment has no declaration keyword.
 ```
 
 Binding immutability is not a general guarantee that referenced data is deeply
-immutable or memory-safe. Version 1.5.0 supports integer-array reads and
+immutable or memory-safe. Version 1.5.1 supports integer-array reads and
 indexed writes through mutable bindings, but does not implement a production
 memory-safety model.
 
@@ -51,7 +51,7 @@ func calculate_speed(distance, time) {
 }
 ```
 
-The `main` function is the entry point of your program. In the 1.5.0 prototype it has a fixed no-argument entry shape; declaring parameters on `main` is a compile-time error, and program arguments are instead available through the builtins in section 8. When you run your executable, this is where the action starts.
+The `main` function is the entry point of your program. In the 1.5.1 prototype it has a fixed no-argument entry shape; declaring parameters on `main` is a compile-time error, and program arguments are instead available through the builtins in section 8. When you run your executable, this is where the action starts.
 
 ```text
 func main() {
@@ -79,7 +79,7 @@ if speed > speed_limit {
 }
 ```
 
-Comparisons in 1.5.0 are limited to equality, less-than, and greater-than. They
+Comparisons in 1.5.1 are limited to equality, less-than, and greater-than. They
 work on integers and, bytewise, on strings.
 
 ## 4. Loops (doing things repeatedly)
@@ -97,7 +97,7 @@ while i < 3 {
 
 ## 5. Arrays (lists of things)
 
-Version 1.5.0 arrays contain integers. Array literals, indexed reads, and
+Version 1.5.1 arrays contain integers. Array literals, indexed reads, and
 indexed writes through mutable bindings are supported;
 arrays of strings, records, and mixed element types are not part of the current language.
 

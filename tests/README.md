@@ -1,6 +1,6 @@
 # Tests
 
-Kinetic 1.5.0 has separate suites for repository structure, frontend behavior,
+Kinetic 1.5.1 has separate suites for repository structure, frontend behavior,
 LLVM generation, and native execution. The native suite runs in hosted CI on
 every push and stays opt-in locally. Run commands below from the repository root.
 
@@ -74,8 +74,9 @@ Failed nonempty-array allocations now have both structural backend coverage
 regression that uses linker `--wrap=malloc` to fail the generated program's
 first allocation. The native test checks unsuccessful termination before the
 following output. Failure injection requires Clang, Linux linker wrapping, and
-native-test opt-in; hosted native CI runs it on Ubuntu. This covers array
-storage allocation failure, not every allocation site.
+native-test opt-in; hosted native CI runs it on Ubuntu, where it has passed
+alongside the backend assertion. This covers array storage allocation failure,
+not every allocation site.
 
 ## General runner
 
