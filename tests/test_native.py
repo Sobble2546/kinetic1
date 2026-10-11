@@ -1,5 +1,6 @@
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -132,7 +133,7 @@ class NativeExampleTests(unittest.TestCase):
                 timeout=10,
             )
 
-        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(result.returncode, {-signal.SIGILL, -signal.SIGTRAP})
         self.assertIn("Reached allocation", result.stderr)
         self.assertIn("forced malloc failure", result.stderr)
         self.assertLess(

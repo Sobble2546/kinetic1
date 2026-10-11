@@ -154,12 +154,19 @@ class BackendTests(unittest.TestCase):
         from llvmlite import binding
 
         llvm_ir = compile_source(
-            "func main() { let values = [1, 2] print(values[0]) }"
+            "func make() { [1, 2] }\n"
+            "func main() { let values = make() print(values[0]) }"
         )
         with binding.parse_assembly(llvm_ir) as module:
-            function = module.get_function("main")
+            function = module.get_function("make")
             blocks = {block.name: list(block.instructions) for block in function.blocks}
             self.assertEqual(blocks["entry"][-1].opcode, "br")
+            self.assertFalse(
+                any(
+                    inst.opcode in ("getelementptr", "store")
+                    for inst in blocks["entry"]
+                )
+            )
             self.assertEqual(blocks["alloc.fail"][-1].opcode, "unreachable")
             self.assertTrue(
                 any("llvm.trap" in str(inst) for inst in blocks["alloc.fail"])
