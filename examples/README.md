@@ -1,6 +1,6 @@
 # Kinetic examples
 
-These are complete programs for learning and experimenting with the 1.5.0 language.
+These are complete programs for learning and experimenting with the 1.5.1 language.
 
 | Program | Focus |
 | --- | --- |

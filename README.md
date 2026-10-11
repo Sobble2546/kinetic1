@@ -4,7 +4,7 @@ A small language compiler, written in Python and targeting LLVM.
 
 [Language guide](docs/syntax_guide.md) · [Architecture](docs/architecture.md) · [Installation](INSTALL.md) · [Contributing](CONTRIBUTING.md) · [Roadmap](ROADMAP.md)
 
-Kinetic is an early compiler prototype (1.5.0). It reads Kinetic source, performs
+Kinetic is an early compiler prototype (1.5.1). It reads Kinetic source, performs
 lexical, syntactic, and type analysis, emits verified textual LLVM IR through
 llvmlite, and uses Clang to produce a native executable.
 
@@ -78,7 +78,7 @@ one clear location.
 | --- | --- |
 | [Compiler](compiler/README.md) | A flat Python package containing all compiler stages and the CLI. |
 | [Documentation](docs/README.md) | Language reference, architecture, and repository design. |
-| [Examples](examples/README.md) | Thirteen numbered programs plus compile-time error, runtime-failure, and warning examples for 1.5.0. |
+| [Examples](examples/README.md) | Thirteen numbered programs plus compile-time error, runtime-failure, and warning examples for 1.5.1. |
 | [Tools](tools/README.md) | Repository maintenance utilities, separate from the compiler CLI. |
 | [Tests](tests/README.md) | Separate layout, frontend, backend, and opt-in native suites. |
 | [Package configuration](pyproject.toml) | Python packaging and the optional installed command. |
@@ -108,6 +108,16 @@ toolchain to build and execute all thirteen numbered examples plus the
 runtime-failure programs. A passing native job verifies the covered end-to-end
 behavior for that revision; configuration alone is not evidence of success. See
 [contributing](CONTRIBUTING.md).
+
+### Verified in 1.5.1
+
+This patch release adds coverage only; source syntax and generated programs are
+unchanged. Failed nonempty-array allocations now have a structural backend
+assertion that the failure block traps before element initialization, and a
+Linux native regression that fails the first `malloc` through linker wrapping
+and expects a trap before any later output. Both have passed in the hosted
+behavioral and native CI jobs, closing the verification gap for 1.2.1's
+allocation-failure trap.
 
 ### New in 1.5.0
 
@@ -186,7 +196,7 @@ the native suites on every push. The
 ## Direction
 
 The current goal is to build the foundations needed for a compiler written in
-Kinetic that can compile itself. Version 1.5.0 is not self-hosting yet. The
+Kinetic that can compile itself. Version 1.5.1 is not self-hosting yet. The
 [roadmap](ROADMAP.md) separates completed work, current planning, and future milestones.
 
 ## License
