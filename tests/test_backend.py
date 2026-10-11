@@ -149,6 +149,30 @@ class BackendTests(unittest.TestCase):
         self.assertIn('declare i64* @"malloc"(i64', llvm_ir)
         self.assertNotIn("alloca i64", llvm_ir)
 
+    def test_nonempty_array_allocation_failure_traps_before_initialization(self):
+        from compiler.compiler import compile_source
+        from llvmlite import binding
+
+        llvm_ir = compile_source(
+            "func main() { let values = [1, 2] print(values[0]) }"
+        )
+        with binding.parse_assembly(llvm_ir) as module:
+            function = module.get_function("main")
+            blocks = {block.name: list(block.instructions) for block in function.blocks}
+            self.assertEqual(blocks["entry"][-1].opcode, "br")
+            self.assertEqual(blocks["alloc.fail"][-1].opcode, "unreachable")
+            self.assertTrue(
+                any("llvm.trap" in str(inst) for inst in blocks["alloc.fail"])
+            )
+            self.assertFalse(
+                any(
+                    inst.opcode in ("getelementptr", "store")
+                    for inst in blocks["alloc.fail"]
+                )
+            )
+            self.assertEqual(blocks["alloc.ok"][0].opcode, "getelementptr")
+            self.assertEqual(blocks["alloc.ok"][1].opcode, "store")
+
     def test_returned_local_array_keeps_heap_storage(self):
         from compiler.compiler import compile_source
 

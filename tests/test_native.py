@@ -74,6 +74,74 @@ class NativeExampleTests(unittest.TestCase):
                 [str(binary), *args], cwd=directory, capture_output=True, text=True, timeout=10
             )
 
+    @unittest.skipUnless(
+        sys.platform.startswith("linux"), "requires a Linux linker with --wrap support"
+    )
+    def test_failed_array_allocation_traps_before_initialization(self):
+        from compiler.compiler import compile_source
+
+        source = (
+            "func main() {\n"
+            '  eprint("Reached allocation")\n'
+            "  let values = [7, 8]\n"
+            "  print(values[0])\n"
+            '  eprint("Unreachable")\n'
+            "}"
+        )
+        malloc_shim = (
+            "#include <stddef.h>\n"
+            "#include <unistd.h>\n"
+            "void *__real_malloc(size_t size);\n"
+            "void *__wrap_malloc(size_t size) {\n"
+            "    static int fail_next = 1;\n"
+            "    if (fail_next) {\n"
+            '        static const char marker[] = "forced malloc failure";\n'
+            "        fail_next = 0;\n"
+            "        (void)write(STDERR_FILENO, marker, sizeof(marker) - 1);\n"
+            "        return NULL;\n"
+            "    }\n"
+            "    return __real_malloc(size);\n"
+            "}\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            ir_path = work / "program.ll"
+            ir_path.write_text(compile_source(source), encoding="utf-8")
+            shim_path = work / "fail_malloc.c"
+            shim_path.write_text(malloc_shim, encoding="utf-8")
+            binary = work / "program"
+            subprocess.run(
+                [
+                    CLANG,
+                    str(ir_path),
+                    str(shim_path),
+                    "-Wl,--wrap=malloc",
+                    "-o",
+                    str(binary),
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=30,
+            )
+            result = subprocess.run(
+                [str(binary)],
+                cwd=directory,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Reached allocation", result.stderr)
+        self.assertIn("forced malloc failure", result.stderr)
+        self.assertLess(
+            result.stderr.index("Reached allocation"),
+            result.stderr.index("forced malloc failure"),
+        )
+        self.assertNotIn("Unreachable", result.stderr)
+        self.assertEqual(result.stdout, "")
+
     def test_lengths_and_reads_survive_copies_calls_and_branches(self):
         result = self._run_source(
             "func count(values) { len(values) }\n"

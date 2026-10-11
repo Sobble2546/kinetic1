@@ -69,9 +69,13 @@ failure block traps and that element pointer arithmetic, loads, and stores
 appear only after the bounds branch. These backend tests require IR generation; they are
 not part of static-only verification.
 
-The backend also traps on failed nonempty-array allocations, but the current
-suites do not force allocation failure or directly assert that failure path.
-Do not describe the heap-storage tests as allocation-failure coverage.
+Failed nonempty-array allocations now have both structural backend coverage
+(the failure block traps before element initialization) and a Linux native
+regression that uses linker `--wrap=malloc` to fail the generated program's
+first allocation. The native test checks unsuccessful termination before the
+following output. Failure injection requires Clang, Linux linker wrapping, and
+native-test opt-in; hosted native CI runs it on Ubuntu. This covers array
+storage allocation failure, not every allocation site.
 
 ## General runner
 
