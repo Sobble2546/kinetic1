@@ -1,6 +1,6 @@
 # Installing and running Kinetic
 
-These instructions describe Kinetic 1.5.0. The version is declared in
+These instructions describe Kinetic 1.5.1. The version is declared in
 [package configuration](pyproject.toml).
 
 ## Requirements
