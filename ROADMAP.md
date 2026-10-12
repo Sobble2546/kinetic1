@@ -163,7 +163,9 @@ likewise be established from results, not configuration or written tests alone.
   module must not declare `main`, and the compilation API takes the source path
   alongside the text so the CLI can resolve imports. Covered by module-resolution
   frontend regressions, an IR equivalence check, and native execution of the
-  [modules example](examples/14_modules.kn) in the shared suites.
+  [modules example](examples/14_modules.kn) in the shared suites. Those suites
+  passed locally for 1.6.0, native build and execution included; the hosted
+  behavioral and native jobs run the same suites on every push.
 - [x] A documented interface to native services and the LLVM/Clang toolchain
   that does not require Python-specific llvmlite APIs inside Kinetic code
   ([bootstrap host interface](docs/bootstrap_interface.md)). This completes the
