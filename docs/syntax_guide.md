@@ -375,7 +375,12 @@ func main() {
 ```
 
 - The path is a string literal naming a file relative to the file that contains
-  the declaration; it must end in `.kn`, and absolute paths are rejected.
+  the declaration, and it must end in `.kn`. Only relative paths are accepted:
+  rooted (`/lib.kn`, `\lib.kn`), drive-qualified (`C:/lib.kn`, `C:lib.kn`), and
+  UNC (`\\server\share\lib.kn`) paths are rejected, and separators must be
+  forward slashes, so `modules\text_utils.kn` is a compile-time error rather
+  than a Windows-only import. The same paths are accepted and rejected on every
+  host, so an import that builds on one platform builds on the others.
 - Imports are transitive. An imported module may import further modules, and
   each of those paths is resolved relative to that module, not to the program
   that started the build.
@@ -391,7 +396,8 @@ func main() {
   programs reuse.
 - A diagnostic inside a module reports that module's own line and column and
   names the imported file. A missing file, an unreadable file, or a path that
-  breaks the rules above is reported at the `import` declaration that named it.
+  breaks any of the rules above is reported at the `import` declaration that
+  named it.
 
 Imports still produce one compiled program and one native executable: modules
 are resolved at build time. There is no separate compilation and linking step,

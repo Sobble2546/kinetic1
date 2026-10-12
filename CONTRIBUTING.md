@@ -35,12 +35,13 @@ builtins need matching analyzer and backend handling. Do not create a placeholde
 standard-library tree before there is an actual library implementation.
 
 Import resolution lives in the module loader between parsing and analysis. It
-merges a module's functions and records dependency-first, loads each canonical
-path once, rejects cycles and a module that declares `main`, and leaves one
-shared top-level namespace. Keep it free of analyzer and backend dependencies,
-report a module's own line and column when its contents fail while naming the
-imported file, and cover new behavior in the loader tests plus an example when
-it changes what programs can do.
+requires import paths to be relative and forward-slash based under one
+host-independent rule, merges a module's functions and records dependency-first,
+loads each canonical path once, rejects cycles and a module that declares
+`main`, and leaves one shared top-level namespace. Keep it free of analyzer and
+backend dependencies, report a module's own line and column when its contents
+fail while naming the imported file, and cover new behavior in the loader tests
+plus an example when it changes what programs can do.
 
 The array-length builtin likewise requires matching analyzer and backend
 handling. Preserve pointer/count metadata across array copies, mutable storage,

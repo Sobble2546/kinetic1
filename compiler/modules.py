@@ -42,6 +42,17 @@ def _canonical(path: Path) -> Path:
         return path.absolute()
 
 
+def _is_relative(path: str) -> bool:
+    if path.startswith(("/", "\\")):
+        return False
+    return not (
+        len(path) > 1
+        and path[1] == ":"
+        and path[0].isascii()
+        and path[0].isalpha()
+    )
+
+
 class _ModuleLoader:
     def __init__(self) -> None:
         self._loaded: set[Path] = set()
@@ -81,10 +92,15 @@ class _ModuleLoader:
         path = declaration.path
         if not path:
             _fail(declaration, "import path cannot be empty")
-        if Path(path).is_absolute():
+        if not _is_relative(path):
             _fail(
                 declaration,
                 f"import path {path!r} must be relative to the importing file",
+            )
+        if "\\" in path:
+            _fail(
+                declaration,
+                f"import path {path!r} must use forward slashes",
             )
         if Path(path).suffix != ".kn":
             _fail(

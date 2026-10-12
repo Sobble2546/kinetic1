@@ -157,11 +157,14 @@ likewise be established from results, not configuration or written tests alone.
 - [x] Multi-file organization and a way to resolve compiler modules (1.6.0):
   `import "path.kn"` declarations merge another file's functions and records
   into the program being compiled. Paths are string literals resolved relative
-  to the importing file, must end in `.kn`, may be transitive, load each file
-  once, and import cycles are rejected with the cycle named. Imported
-  declarations join the importer's single top-level namespace, an imported
-  module must not declare `main`, and the compilation API takes the source path
-  alongside the text so the CLI can resolve imports. Covered by module-resolution
+  to the importing file under one host-independent rule: they must end in `.kn`,
+  use forward slashes, and stay relative, so rooted, drive-qualified, and
+  backslash-separated paths are compile-time errors instead of host-dependent
+  lookups. Imports may be transitive, load each file once, and import cycles are
+  rejected with the cycle named. Imported declarations join the importer's
+  single top-level namespace, an imported module must not declare `main`, and
+  the compilation API takes the source path alongside the text so the CLI can
+  resolve imports. Covered by module-resolution
   frontend regressions, an IR equivalence check, and native execution of the
   [modules example](examples/14_modules.kn) in the shared suites. Those suites
   passed locally for 1.6.0, native build and execution included; the hosted

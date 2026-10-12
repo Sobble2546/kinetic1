@@ -38,11 +38,11 @@ and void-binding rules. Record tests cover declaration validation, construction
 typing, field reads and writes, mutability rules, and name clashes. Module tests
 cover relative and transitive resolution, dependency-first merge order, records
 from modules, repeated and diamond imports loading once, cycles, missing files,
-invalid paths, modules that declare `main`, cross-file name clashes, and
-unresolved imports reaching the analyzer. It also loads and
-analyzes all fourteen numbered examples and
-checks intentional failures
-and warning examples. This executes compiler frontend code, but does not emit
+invalid paths (empty, rooted, drive-qualified, and backslash-separated forms are
+rejected with the same rule on every host), modules that declare `main`,
+cross-file name clashes, and unresolved imports reaching the analyzer. It also
+loads and analyzes all fourteen numbered examples and checks intentional
+failures and warning examples. This executes compiler frontend code, but does not emit
 IR or run generated programs.
 
 Length-builtin tests cover valid/empty arrays, invalid types and arity, reserved
