@@ -28,11 +28,14 @@ directory directly.
 
 See the [architecture guide](../docs/architecture.md) for dependencies between stages.
 The module loader reads and parses imported files between parsing and analysis: it
-resolves each `import "path.kn"` relative to the importing file, merges modules
-dependency-first, loads each canonical path once, rejects cycles, rejects a module
-that declares `main`, and keeps one top-level namespace. The pipeline API takes the
-source path alongside the source text so the loader can find a program's modules;
-the analyzer rejects unresolved import declarations rather than resolving them.
+accepts only relative, forward-slash `import "path.kn"` paths, enforces that rule
+identically on every host, resolves each path relative to the importing file, merges
+modules dependency-first, loads each canonical path once, rejects cycles, rejects a
+module that declares `main`, and keeps one top-level namespace. A rooted,
+drive-qualified, or backslash-separated path is a compile-time error instead of a
+host-dependent lookup. The pipeline API takes the source path alongside the source
+text so the loader can find a program's modules; the analyzer rejects unresolved
+import declarations rather than resolving them.
 The analyzer and backend jointly implement the array-length builtin. They likewise
 share the 1.4.0 host-I/O builtins (`read_file`, `write_file`, `arg_count`, `arg`,
 `eprint`, `exit`), which lower to C library calls; generated `main` functions

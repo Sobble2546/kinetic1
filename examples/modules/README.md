@@ -10,7 +10,9 @@ that imports them, not on their own.
 Rules the compiler enforces:
 
 - An `import` declaration names a string path that is relative to the file
-  containing it and ends in `.kn`.
+  containing it, uses forward slashes, and ends in `.kn`. Rooted
+  (`/lib.kn`, `\lib.kn`), drive-qualified (`C:/lib.kn`), and backslash-separated
+  paths are rejected on every host, so imports resolve the same way everywhere.
 - Import declarations appear before function and record declarations.
 - A module contributes its functions and records to the importing program's
   single top-level namespace, so duplicate names are errors.

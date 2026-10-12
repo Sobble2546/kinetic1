@@ -42,11 +42,13 @@ reads and parses each module, resolves that module's own imports first, and only
 then appends its records and functions, so dependencies precede dependents and the
 merged declaration order is deterministic. It canonicalizes every path so each file
 contributes once, tracks the chain currently being loaded to report import cycles,
-rejects absolute paths, paths without the `.kn` suffix, and modules that declare
-`main`, and re-tags a module's lexer or parser errors with that module's name in the
-message while keeping the module's own line and column. The merged program keeps a
-single top-level namespace, so duplicate names across files are the analyzer's
-existing duplicate-definition errors. `compile_with_diagnostics()` and
+rejects paths without the `.kn` suffix and modules that declare `main`, and applies
+one host-independent path rule: a rooted, drive-qualified, or backslash-separated
+path is a compile-time error rather than something resolved differently on Windows
+and POSIX hosts. It then re-tags a module's lexer or parser errors with that
+module's name in the message while keeping the module's own line and column. The
+merged program keeps a single top-level namespace, so duplicate names across files
+are the analyzer's existing duplicate-definition errors. `compile_with_diagnostics()` and
 `compile_source()` take the source file path next to the source text and the CLI
 passes it; compiling bare text that contains an import is an error, and the analyzer
 rejects any import declaration that reaches it unresolved.

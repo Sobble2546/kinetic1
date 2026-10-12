@@ -115,9 +115,12 @@ behavior for that revision; configuration alone is not evidence of success. See
 
 Multi-file programs: `import "modules/text_utils.kn"` merges another file's
 functions and records into the program being compiled. Import declarations
-appear before function and record declarations, the path is a string resolved
-relative to the importing file and must end in `.kn`, and imports may be
-transitive. Each file is loaded once, whether it is imported directly or through
+appear before function and record declarations, the path is a relative,
+forward-slash string resolved against the importing file and must end in `.kn`,
+and imports may be transitive. Rooted (`/lib.kn`, `\lib.kn`), drive-qualified
+(`C:/lib.kn`), and backslash-separated paths are compile-time errors on every
+platform, so a program's imports resolve the same way on Windows and POSIX
+hosts. Each file is loaded once, whether it is imported directly or through
 other modules, and import cycles are rejected with the files in the cycle named.
 Imported declarations join the importer's single top-level namespace, so
 duplicate names are compile-time errors, and an imported module must not declare

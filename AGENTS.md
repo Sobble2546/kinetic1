@@ -118,8 +118,10 @@ The orchestration API verifies the IR with llvmlite before returning it.
 
 The 1.6.0 module loader runs between parsing and analysis. `import "path.kn"`
 declarations are resolved relative to the importing file, must end in `.kn`,
-may be transitive, load each canonical path once, reject cycles, and reject a
-module that declares `main`. The merged program shares one top-level
+must be relative and forward-slash based under one host-independent rule that
+rejects rooted, drive-qualified, and backslash-separated paths on every
+platform, may be transitive, load each canonical path once, reject cycles, and
+reject a module that declares `main`. The merged program shares one top-level
 namespace, so duplicate names across files stay duplicate-definition errors.
 Keep the loader independent of analysis and code generation, and keep import
 handling there rather than in the analyzer or the backend. The compilation

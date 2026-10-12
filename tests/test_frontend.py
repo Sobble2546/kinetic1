@@ -1315,21 +1315,53 @@ class ModuleImportTests(unittest.TestCase):
                 (raised.exception.line, raised.exception.column), (3, 1)
             )
 
+    @staticmethod
+    def _import_program(path: str) -> str:
+        escaped = path.replace("\\", "\\\\")
+        return f'import "{escaped}"\nfunc main() {{\n}}\n'
+
     def test_import_path_rules_are_reported(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             cases = (
-                ('import ""\nfunc main() {\n}\n', "cannot be empty"),
-                ('import "/outside.kn"\nfunc main() {\n}\n', "must be relative"),
-                ('import "lib.kinetic"\nfunc main() {\n}\n', "'.kn' extension"),
+                ("", "cannot be empty"),
+                ("/outside.kn", "must be relative"),
+                ("lib.kinetic", "'.kn' extension"),
             )
-            for text, expected in cases:
-                with self.subTest(expected=expected):
-                    entry = self._write(root, "program.kn", text)
+            for path, expected in cases:
+                with self.subTest(path=path):
+                    entry = self._write(
+                        root, "program.kn", self._import_program(path)
+                    )
                     with self.assertRaises(CompileError) as raised:
                         self._analyze_file(entry)
                     self.assertIn(expected, str(raised.exception))
                     self.assertEqual(raised.exception.line, 1)
+
+    def test_import_paths_follow_one_rule_on_every_host(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            cases = (
+                ("\\outside.kn", "must be relative"),
+                ("//outside.kn", "must be relative"),
+                ("C:/outside.kn", "must be relative"),
+                ("C:outside.kn", "must be relative"),
+                ("\\\\server\\share\\lib.kn", "must be relative"),
+                ("lib\\outside.kn", "forward slashes"),
+                ("modules\\text_utils.kn", "forward slashes"),
+            )
+            for path, expected in cases:
+                with self.subTest(path=path):
+                    entry = self._write(
+                        root, "program.kn", self._import_program(path)
+                    )
+                    with self.assertRaises(CompileError) as raised:
+                        self._analyze_file(entry)
+                    self.assertIn(expected, str(raised.exception))
+                    self.assertEqual(
+                        (raised.exception.line, raised.exception.column),
+                        (1, 1),
+                    )
 
     def test_module_syntax_errors_name_the_imported_module(self):
         with tempfile.TemporaryDirectory() as directory:
